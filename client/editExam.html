@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body onload="editExam()">
+    <div class="form" style="width: 350px">
+      <div style="width: 300px; margin: auto">
+        <h3>EDIT EXAM</h3>
+        <div style="width: 100%; margin: auto">
+          <div class="input">
+            <span>Subject:</span><input type="text" id="sub" />
+          </div>
+          <div class="input">
+            <span>Date:</span><input type="date" id="date" />
+          </div>
+          <div class="input">
+            <span>Grade:</span><input type="text" id="grade" />
+          </div>
+        </div>
+        <div style="width: 100%; margin: auto">
+          <button class="submit" onclick="updateExam()">Update</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get("id");
+      const index = urlParams.get("index");
+      let exams = [];
+      console.log(id);
+      console.log(index);
+      const editExam = async () => {
+        const response = await fetch(`http://localhost:8000/students/${id}`);
+        const data = await response.json();
+        const sub = document.getElementById("sub");
+        const date = document.getElementById("date");
+        const grade = document.getElementById("grade");
+        sub.value = data.Exams[index].subject;
+        date.value = data.Exams[index].date;
+        grade.value = data.Exams[index].grade;
+        exams = data.Exams;
+      };
+      function updateExam() {
+        const sub = document.getElementById("sub").value;
+        const date = document.getElementById("date").value;
+        const grade = document.getElementById("grade").value;
+        exams[index] = { subject: sub, date: date, grade: grade };
+        fetch(`http://localhost:8000/students/${id}`, {
+          method: "PUT",
+          body: JSON.stringify({
+            Exams: exams,
+          }),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
+        });
+      }
+    </script>
+  </body>
+</html>

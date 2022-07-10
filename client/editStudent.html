@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body onload="getStudentInfo()">
+    <div class="form">
+      <h3>STUDEN'S DETAILS</h3>
+      <table id="table" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <th>Full Name</th>
+          <th>Email</th>
+          <th>Faculty</th>
+          <th>Birth Date</th>
+        </tr>
+      </table>
+      <h3>EXAMS</h3>
+      <table id="grades" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <th>Exam</th>
+          <th>Date</th>
+          <th>Grade</th>
+          <th>Edit</th>
+        </tr>
+      </table>
+      <div style="width: 300px; margin: auto">
+        <div style="width: 100%; margin: auto">
+          <div class="input">
+            <span>Name: </span><input type="text" id="name" />
+          </div>
+          <div class="input">
+            <span>Email: </span><input type="text" id="email" />
+          </div>
+          <div class="input">
+            <span>Faculty: </span><input type="text" id="faculty" />
+          </div>
+          <div class="input">
+            <span>Birth date:</span><input type="date" id="birthD" />
+          </div>
+        </div>
+        <div style="width: 100%; margin: auto">
+          <button class="submit" onclick="updateStudent()">Submit</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get("id");
+      console.log(id);
+      const getStudentInfo = async () => {
+        const response = await fetch(`http://localhost:8000/students/${id}`);
+        const data = await response.json();
+        const table = document.getElementById("table");
+        const MainTr = document.createElement("tr");
+        const tdName = document.createElement("td");
+        const tdEmail = document.createElement("td");
+        const tdFaculty = document.createElement("td");
+        const tdBD = document.createElement("td");
+        const examsTable = document.getElementById("grades");
+        for (let e = 0; e < data.Exams.length; e++) {
+          const tr = document.createElement("tr");
+          const tdSubject = document.createElement("td");
+          const tdDate = document.createElement("td");
+          const tdGrade = document.createElement("td");
+          const tdEdit = document.createElement("td");
+          tdSubject.innerText = data.Exams[e].subject;
+          tdDate.innerText = data.Exams[e].date;
+          tdGrade.innerText = data.Exams[e].grade;
+          const a = document.createElement("a");
+          a.href = `./editExam.html?id=${data._id}&&index=${e}`;
+          a.text = "Edit";
+          tdEdit.appendChild(a);
+          tr.appendChild(tdSubject);
+          tr.appendChild(tdDate);
+          tr.appendChild(tdGrade);
+          tr.appendChild(tdEdit);
+          examsTable.appendChild(tr);
+        }
+        tdName.innerText = data.FullName;
+        tdEmail.innerText = data.Email;
+        tdFaculty.innerText = data.Faculty;
+        tdBD.innerText = data.Birthdate;
+        MainTr.appendChild(tdName);
+        MainTr.appendChild(tdEmail);
+        MainTr.appendChild(tdFaculty);
+        MainTr.appendChild(tdBD);
+        table.appendChild(MainTr);
+      };
+      function updateStudent() {
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const faculty = document.getElementById("faculty").value;
+        const birthDate = document.getElementById("birthD").value;
+        fetch(`http://localhost:8000/students/${id}`, {
+          method: "PUT",
+          body: JSON.stringify({
+            FullName: name,
+            Email: email,
+            Faculty: faculty,
+            BirthDate: birthDate,
+          }),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Students</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body onload="getData()">
+    <div class="form">
+      <table id="table"></table>
+      <div style="width: 300px; margin: auto">
+        <a href="./addStudent.html"
+          ><button class="submit">Add Student</button></a
+        >
+      </div>
+    </div>
+
+    <script>
+      const getData = async () => {
+        const response = await fetch("http://localhost:8000/students");
+        const data = await response.json();
+        const table = document.getElementById("table");
+        table.innerHTML = "";
+        table.cellpadding = "0";
+        table.cellspacing = "0";
+        table.border = "0";
+        const hTR = document.createElement("tr");
+        const thName = document.createElement("td");
+        const thFaculty = document.createElement("td");
+        const thEdit = document.createElement("td");
+        const thDelete = document.createElement("td");
+        const thExams = document.createElement("td");
+        thName.innerText = "Full Name";
+        thFaculty.innerText = "Faculty";
+        thExams.innerText = "Exams";
+        thEdit.innerText = "Edit";
+        thDelete.innerText = "Delete";
+        hTR.appendChild(thName);
+        hTR.appendChild(thFaculty);
+        hTR.appendChild(thExams);
+        hTR.appendChild(thEdit);
+        hTR.appendChild(thDelete);
+        hTR.className = "title";
+        table.appendChild(hTR);
+        for (let s = 0; s < data.length; s++) {
+          const tr = document.createElement("tr");
+          const tdName = document.createElement("td");
+          const tdFaculty = document.createElement("td");
+          const tdExams = document.createElement("td");
+          const tdEdit = document.createElement("td");
+          const tdDelete = document.createElement("td");
+          tdFaculty.innerText = data[s].Faculty;
+          const showStudent = document.createElement("a");
+          showStudent.href = `./showStudent.html?id=${data[s]._id}`;
+          const a = document.createElement("a");
+          a.href = `./exams.html?id=${data[s]._id}`;
+          a.text = "Exams";
+          const editStudent = document.createElement("a");
+          editStudent.text = "edit";
+          editStudent.href = `./editStudent.html?id=${data[s]._id}`;
+          const deleteStudent = document.createElement("a");
+          deleteStudent.href = `./deleteStudent.html?id=${data[s]._id}`;
+          deleteStudent.text = "delete";
+          showStudent.text = data[s].FullName;
+          tdName.appendChild(showStudent);
+          tdExams.appendChild(a);
+          tdEdit.appendChild(editStudent);
+          tdDelete.appendChild(deleteStudent);
+          tr.appendChild(tdName);
+          tr.appendChild(tdFaculty);
+          tr.appendChild(tdExams);
+          tr.appendChild(tdEdit);
+          tr.appendChild(tdDelete);
+          tr.className = "subtitle";
+          table.appendChild(tr);
+        }
+        console.log(data);
+      };
+    </script>
+  </body>
+</html>

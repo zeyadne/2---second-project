@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="form">
+      <span>Full Name: </span><input type="text" id="name" />
+      <span>Email: </span><input type="text" id="email" /> <span>Faculty: </span
+      ><input type="text" id="faculty" /> <span>Birth date:</span
+      ><input type="date" id="birthD" />
+      <button class="submit" onclick="addStudent()">Submit</button>
+    </div>
+    <script>
+      function addStudent() {
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const faculty = document.getElementById("faculty").value;
+        const bDate = document.getElementById("birthD").value;
+        fetch(`http://localhost:8000/students`, {
+          method: "POST",
+          body: JSON.stringify({
+            FullName: name,
+            Email: email,
+            BirthDate: bDate,
+            Faculty: faculty,
+          }),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
+        });
+        window.location.href = "./students.html";
+      }
+    </script>
+  </body>
+</html>

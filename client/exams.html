@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Students exams</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body onload="getExams()">
+    <div class="form">
+      <h3>STUDENT'S EXAMS</h3>
+      <table id="table" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <th></th>
+          <th>Subject</th>
+          <th>Date</th>
+          <th>Grade</th>
+          <th>Edit</th>
+          <th>Delete</th>
+        </tr>
+      </table>
+      <div style="width: 300px; margin: auto">
+        <div style="width: 100%; margin: auto">
+          <div class="input">
+            <span>Subject: </span><input type="text" id="sub" />
+          </div>
+          <div class="input">
+            <span>Date: </span><input type="date" id="date" />
+          </div>
+          <div class="input">
+            <span>Grade: </span><input type="text" id="grade" />
+          </div>
+        </div>
+        <div style="width: 100%; margin: auto">
+          <button class="submit" onclick="addExam()">Add Exam</button>
+          <div class="input">
+            <span id="examIndex" type="text">exam</span>
+          </div>
+          <a id="linkToUpdate" href="">
+            <button class="submit">Update Exam</button>
+          </a>
+        </div>
+      </div>
+    </div>
+    <script>
+      // gets the parameter from the query string
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get("id");
+      let examsArray = [];
+      const getExams = async () => {
+        console.log(id);
+        const response = await fetch(`http://localhost:8000/students/${id}`);
+        const data = await response.json();
+        examsArray = data.Exams;
+        const table = document.getElementById("table");
+        const tr = document.createElement("tr");
+        for (let e = 0; e < data.Exams.length; e++) {
+          const tr = document.createElement("tr");
+          const radio = document.createElement("input");
+          radio.type = "radio";
+          radio.name = "exam";
+          // adds a function to the radio button to update a chosen exams
+          radio.onclick = function () {
+            document.getElementById(
+              "examIndex"
+            ).innerText = `Exam to update : ${data.Exams[e].subject}`;
+            let link = `./editExam.html?id=${id}&&index=${e}`;
+            console.log(link);
+            document.getElementById("linkToUpdate").href = link;
+          };
+
+          const tdRadio = document.createElement("td");
+          tdRadio.appendChild(radio);
+          const tdSubject = document.createElement("td");
+          const tdDate = document.createElement("td");
+          const tdGrade = document.createElement("td");
+          const tdEdit = document.createElement("td");
+          const tdDelete = document.createElement("td");
+          tdSubject.innerText = data.Exams[e].subject;
+          tdDate.innerText = data.Exams[e].date;
+          tdGrade.innerText = data.Exams[e].grade;
+          const edit = document.createElement("a");
+          edit.href = `./editExam.html?id=${data._id}&&index=${e}`;
+          edit.text = "Edit";
+          tdEdit.appendChild(edit);
+          const deleteExam = document.createElement("a");
+          deleteExam.href = `./deleteExam.html?id=${data._id}&&index=${e}`;
+          deleteExam.text = "Delete";
+          tdDelete.appendChild(deleteExam);
+          tr.appendChild(tdRadio);
+          tr.appendChild(tdSubject);
+          tr.appendChild(tdDate);
+          tr.appendChild(tdGrade);
+          tr.appendChild(tdEdit);
+          tr.appendChild(tdDelete);
+          table.appendChild(tr);
+        }
+      };
+      function addExam() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get("id");
+        const index = urlParams.get("index");
+        const sub = document.getElementById("sub").value;
+        const date = document.getElementById("date").value;
+        const grade = document.getElementById("grade").value;
+        examsArray.push({ subject: sub, date: date, grade: grade });
+        fetch(`http://localhost:8000/students/${id}`, {
+          method: "PUT",
+          body: JSON.stringify({
+            Exams: examsArray,
+          }),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
+        });
+        window.location.href = "";
+      }
+      // const updateEx= ((e) => {
+      //   let checked=document.getElementsByName(e).value
+      //   console.log(checked);
+      //   if (e >= 0) {
+      //     let examIndex=document.getElementById("examIndex").value;
+      //     document.getElementById(
+      //       "linkToUpdate"
+      //     ).href = `./editExam.html?id=${id}&&index=${e}`;
+      //   } else {
+      //     return;
+      //   }
+      // })
+    </script>
+  </body>
+</html>
